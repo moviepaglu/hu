@@ -14,8 +14,7 @@
     background: rgba(30,41,59,0.7); border-radius:24px;
     border:1px solid #334155;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    position: relative;
-    overflow: hidden;
+    position: relative; overflow: hidden;
   }
   .header::before {
     content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
@@ -34,23 +33,17 @@
   }
   .header .sub { color:#94a3b8; font-size:14px; margin-top:10px; position:relative; }
 
-  .search-bar {
-    max-width: 500px; margin: 20px auto 0; position: relative;
-  }
+  .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; }
   .search-bar input {
     width:100%; padding: 13px 18px 13px 45px;
     border-radius: 12px; border: 2px solid #334155;
     background: #0f172a; color: #fff; font-size: 14px;
     outline: none; transition: 0.2s;
   }
-  .search-bar input:focus {
-    border-color: #38bdf8;
-    box-shadow: 0 0 0 3px rgba(56,189,248,0.2);
-  }
+  .search-bar input:focus { border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56,189,248,0.2); }
   .search-bar::before {
     content: '🔍'; position: absolute; left: 15px; top: 50%;
-    transform: translateY(-50%); font-size: 16px;
-    pointer-events: none;
+    transform: translateY(-50%); font-size: 16px; pointer-events: none;
   }
 
   .card {
@@ -80,33 +73,25 @@
   }
 
   .movie-item {
-    background: #0f172a;
-    border: 1px solid #334155;
-    border-radius: 18px;
-    overflow: hidden;
+    background: #0f172a; border: 1px solid #334155;
+    border-radius: 18px; overflow: hidden;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex; flex-direction: column;
-    cursor: pointer;
-    position: relative;
+    display: flex; flex-direction: column; cursor: pointer;
   }
   .movie-item:hover {
-    border-color: #38bdf8;
-    transform: translateY(-8px);
+    border-color: #38bdf8; transform: translateY(-8px);
     box-shadow: 0 25px 40px -15px rgba(56,189,248,0.3);
   }
 
   .poster-wrap {
     width:100%; aspect-ratio: 2/3;
-    background: #1e293b; overflow: hidden;
-    position: relative;
+    background: #1e293b; overflow: hidden; position: relative;
   }
   .poster-wrap img {
     width:100%; height:100%; object-fit: cover;
     display: block; transition: 0.4s;
   }
-  .movie-item:hover .poster-wrap img {
-    transform: scale(1.08);
-  }
+  .movie-item:hover .poster-wrap img { transform: scale(1.08); }
   .no-poster {
     width:100%; height:100%; display:flex; align-items:center;
     justify-content:center; font-size:60px; color:#475569;
@@ -122,10 +107,7 @@
     border: 1px solid rgba(110, 231, 183, 0.3);
   }
 
-  .item-body {
-    padding: 14px; flex:1;
-    display: flex; flex-direction: column;
-  }
+  .item-body { padding: 14px; flex:1; display: flex; flex-direction: column; }
   .item-name {
     font-weight: 700; color: #f1f5f9; font-size: 15px;
     margin-bottom: 10px; line-height: 1.3;
@@ -134,15 +116,8 @@
     min-height: 40px;
   }
 
-  .badges {
-    display: flex; flex-wrap: wrap; gap: 6px;
-    margin-bottom: 10px;
-  }
-  .mini-badge {
-    font-size: 10px; padding: 4px 10px;
-    border-radius: 20px; font-weight: 700;
-    letter-spacing: 0.3px;
-  }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .mini-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
   .badge-lang { background: #1e40af; color: #bfdbfe; }
 
   .item-desc {
@@ -162,25 +137,15 @@
     justify-content: center; gap: 6px;
     transition: 0.2s; width: 100%;
   }
-  .btn-download:hover {
-    transform: scale(1.03);
-    box-shadow: 0 10px 25px rgba(16,185,129,0.4);
-  }
+  .btn-download:hover { transform: scale(1.03); box-shadow: 0 10px 25px rgba(16,185,129,0.4); }
   .btn-download:active { transform: scale(0.98); }
 
   .empty, .loading {
     text-align: center; padding: 60px 20px;
-    color: #64748b; font-size: 14px;
-    grid-column: 1/-1;
+    color: #64748b; font-size: 14px; grid-column: 1/-1;
   }
-  .empty-icon {
-    font-size: 64px; margin-bottom: 15px;
-    display: block; opacity: 0.6;
-  }
-  .empty h3 {
-    color: #cbd5e1; font-size: 18px; margin-bottom: 6px;
-    font-weight: 600;
-  }
+  .empty-icon { font-size: 64px; margin-bottom: 15px; display: block; opacity: 0.6; }
+  .empty h3 { color: #cbd5e1; font-size: 18px; margin-bottom: 6px; font-weight: 600; }
 
   .footer {
     text-align: center; margin-top: 30px;
@@ -188,18 +153,13 @@
     padding: 20px 0; border-top: 1px solid #334155;
   }
 
-  /* Loader animation */
   .spinner {
     display: inline-block; width: 30px; height: 30px;
-    border: 3px solid #334155;
-    border-top-color: #38bdf8;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-bottom: 12px;
+    border: 3px solid #334155; border-top-color: #38bdf8;
+    border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Scrollbar */
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -219,18 +179,14 @@
 
 <div class="container">
 
-  <!-- Header -->
   <div class="header">
     <h1>🎬 Movie Download Hub</h1>
     <p class="sub">Free HD movies · No login · Instant download</p>
-
-    <!-- Search -->
     <div class="search-bar">
       <input type="text" id="searchInput" placeholder="Search movie...">
     </div>
   </div>
 
-  <!-- Movies Card -->
   <div class="card">
     <div class="card-title">
       <div class="left">📥 Available Movies</div>
@@ -244,10 +200,7 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    ⚡ Powered by Firebase · Live updates · Auto refresh
-  </div>
+  <div class="footer">⚡ Powered by Firebase · Live updates</div>
 
 </div>
 
@@ -256,23 +209,23 @@
   import { getDatabase, ref, onValue }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // 🔥 Firebase Config (abodorders project)
+  // 🔥 NAYA Firebase Config (abod-df454)
   const firebaseConfig = {
-    apiKey: "AIzaSyDuqiqHX3AfLBPYQNOQG_KlQXLM2EmcKn4",
-    authDomain: "abodorders.firebaseapp.com",
-    databaseURL: "https://abodorders-default-rtdb.firebaseio.com",
-    projectId: "abodorders",
-    storageBucket: "abodorders.firebasestorage.app",
-    messagingSenderId: "300296329995",
-    appId: "1:300296329995:web:1beb80c5d4526c0f7f200e",
-    measurementId: "G-7CVK1W2950"
+    apiKey: "AIzaSyC6bvaho6e-55XSPeW92e6CMviuj6WCqA8",
+    authDomain: "abod-df454.firebaseapp.com",
+    databaseURL: "https://abod-df454-default-rtdb.firebaseio.com",
+    projectId: "abod-df454",
+    storageBucket: "abod-df454.firebasestorage.app",
+    messagingSenderId: "962090759544",
+    appId: "1:962090759544:web:2a0da10cf441a6f3ff848d",
+    measurementId: "G-RGMRXYXNPM"
   };
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const moviesRef = ref(db, 'movies');
 
-  let allMovies = [];   // saari movies store karne ke liye
+  let allMovies = [];
 
   // ---------- Search ----------
   const searchInput = document.getElementById('searchInput');
@@ -304,12 +257,10 @@
       return;
     }
 
-    // Object → Array + sort latest first
     allMovies = Object.entries(data)
       .map(([id, val]) => ({ id, ...val }))
       .sort((a, b) => (b.time || 0) - (a.time || 0));
 
-    // Search filter apply karo agar search box me kuch hai
     const query = searchInput.value.toLowerCase().trim();
     const filtered = query
       ? allMovies.filter(m =>
@@ -371,7 +322,6 @@
     });
   }
 
-  // ---------- Helper ----------
   function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text || '';
