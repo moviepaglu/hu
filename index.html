@@ -242,6 +242,7 @@
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     opacity: 0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 9999; pointer-events: none;
+    max-width: 90vw; text-align: center;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -278,6 +279,133 @@
     50% { opacity: 1; }
   }
 
+  /* ============================================================
+     🎯 MOVIE REQUEST SECTION
+     ============================================================ */
+  .request-card {
+    margin-bottom: 26px;
+    background: linear-gradient(145deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95));
+    border: 1px solid #334155;
+    border-radius: 24px;
+    padding: 26px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .request-card::after {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(167,139,250,0.22), transparent 70%);
+    pointer-events: none;
+  }
+
+  .req-head {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; position: relative;
+  }
+  .req-icon {
+    width: 52px; height: 52px; flex-shrink: 0;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #a78bfa, #f472b6);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 8px 20px rgba(167,139,250,0.35);
+  }
+  .req-head h2 {
+    font-size: 20px; font-weight: 800; color: #f1f5f9;
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  }
+  .req-head p { font-size: 13px; color: #94a3b8; margin-top: 4px; line-height: 1.5; }
+  .req-head p strong { color: #6ee7b7; }
+
+  .req-pill {
+    font-size: 10px; font-weight: 800; letter-spacing: .5px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff; padding: 4px 10px; border-radius: 20px;
+    animation: trendPulse 2.4s ease-in-out infinite;
+  }
+
+  .req-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+  .req-grid input {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 2px solid #334155;
+    background: #0f172a;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+  }
+  .req-grid input::placeholder { color: #64748b; }
+  .req-grid input:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(167,139,250,0.2);
+  }
+
+  .btn-request {
+    width: 100%;
+    padding: 15px 20px;
+    border: none; border-radius: 14px;
+    background: linear-gradient(135deg, #a78bfa, #6366f1, #38bdf8);
+    background-size: 200% 200%;
+    color: #fff; font-size: 15px; font-weight: 800;
+    letter-spacing: .3px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: 0.3s;
+    box-shadow: 0 10px 25px rgba(99,102,241,0.35);
+    position: relative;
+  }
+  .btn-request:hover:not(:disabled) {
+    background-position: 100% 50%;
+    transform: translateY(-2px);
+    box-shadow: 0 15px 32px rgba(99,102,241,0.5);
+  }
+  .btn-request:active:not(:disabled) { transform: scale(0.98); }
+  .btn-request:disabled { opacity: 0.65; cursor: not-allowed; }
+
+  .req-note {
+    text-align: center; font-size: 11px; color: #64748b;
+    margin-top: 12px; line-height: 1.6;
+  }
+  .req-note .live { color: #38bdf8; font-weight: 700; }
+
+  /* Success box */
+  .req-success {
+    display: none;
+    align-items: center; gap: 14px;
+    padding: 18px;
+    border-radius: 16px;
+    background: rgba(16,185,129,0.12);
+    border: 1px solid rgba(16,185,129,0.4);
+    margin-top: 14px;
+    animation: fadeUp .4s ease;
+  }
+  .req-success.show { display: flex; }
+  .req-success .tick {
+    width: 44px; height: 44px; flex-shrink: 0;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #10b981, #059669);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 8px 20px rgba(16,185,129,0.4);
+  }
+  .req-success h4 { font-size: 14px; color: #6ee7b7; font-weight: 800; }
+  .req-success p { font-size: 12px; color: #94a3b8; margin-top: 3px; line-height: 1.5; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -292,6 +420,13 @@
     .btn-download { font-size: 12px; padding: 10px 12px; }
     .fav-btn { width: 28px; height: 28px; font-size: 13px; }
     .quality-float { font-size: 9px; padding: 3px 8px; right: 44px; }
+
+    .request-card { padding: 18px; border-radius: 20px; }
+    .req-head h2 { font-size: 16px; }
+    .req-head p { font-size: 12px; }
+    .req-icon { width: 44px; height: 44px; font-size: 22px; border-radius: 13px; }
+    .req-grid { grid-template-columns: 1fr; }
+    .btn-request { font-size: 14px; padding: 14px; }
   }
 </style>
 </head>
@@ -320,6 +455,39 @@
         <option value="oldest">📜 Oldest First</option>
         <option value="name">🔤 Name (A-Z)</option>
       </select>
+    </div>
+  </div>
+
+  <!-- ================= 🎯 MOVIE REQUEST FORM ================= -->
+  <div class="request-card">
+    <div class="req-head">
+      <div class="req-icon">🎯</div>
+      <div>
+        <h2>Movie Request Karein <span class="req-pill">⚡ 6 HOURS</span></h2>
+        <p>Jo movie aapko chahiye, uska naam likhkar submit karein — <strong>6 ghante</strong> ke andar upload kar di jayegi. Request seedha admin panel me jayegi.</p>
+      </div>
+    </div>
+
+    <form id="requestForm" autocomplete="off">
+      <div class="req-grid">
+        <input type="text" id="reqName" placeholder="🎬 Movie ka naam * (e.g. Pushpa 2)" required maxlength="100">
+        <input type="text" id="reqLang" placeholder="🌐 Language (Hindi / Tamil...)" maxlength="40">
+        <input type="text" id="reqQuality" placeholder="🎞️ Quality (480p / 720p / 1080p)" maxlength="30">
+        <input type="text" id="reqContact" placeholder="📱 Telegram / WhatsApp (optional)" maxlength="60">
+      </div>
+      <button type="submit" class="btn-request" id="reqBtn">🚀 Request Submit Karein</button>
+      <p class="req-note">
+        ⚠️ Ek movie sirf ek baar request karein · Spam requests block kar di jayengi<br>
+        <span class="live" id="reqLiveCount">📊 Ab tak 0 requests bheji gayi hain</span>
+      </p>
+    </form>
+
+    <div class="req-success" id="reqSuccess">
+      <div class="tick">✅</div>
+      <div>
+        <h4>Request Successfully Bhej Di Gayi!</h4>
+        <p>Aapki movie <strong>6 ghante</strong> ke andar upload kar di jayegi. Thodi der baad page refresh karke check karte rahiye. 🍿</p>
+      </div>
     </div>
   </div>
 
@@ -372,7 +540,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, onValue }
+  import { getDatabase, ref, onValue, push, set }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   // 🔥 Firebase Config
@@ -390,30 +558,40 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const moviesRef = ref(db, 'movies');
+  const requestsRef = ref(db, 'requests');   // 🎯 requests node (admin panel)
 
   let allMovies = [];
   let favorites = JSON.parse(localStorage.getItem('favMovies') || '[]');
 
   // ---------- Elements ----------
-  const searchInput = document.getElementById('searchInput');
-  const clearSearch = document.getElementById('clearSearch');
-  const filterLang = document.getElementById('filterLang');
+  const searchInput   = document.getElementById('searchInput');
+  const clearSearch   = document.getElementById('clearSearch');
+  const filterLang    = document.getElementById('filterLang');
   const filterQuality = document.getElementById('filterQuality');
-  const sortBy = document.getElementById('sortBy');
-  const listDiv = document.getElementById('movieList');
-  const countBadge = document.getElementById('countBadge');
-  const statsBar = document.getElementById('statsBar');
-  const backTop = document.getElementById('backTop');
-  const toast = document.getElementById('toast');
+  const sortBy        = document.getElementById('sortBy');
+  const listDiv       = document.getElementById('movieList');
+  const countBadge    = document.getElementById('countBadge');
+  const statsBar      = document.getElementById('statsBar');
+  const backTop       = document.getElementById('backTop');
+  const toast         = document.getElementById('toast');
+
+  // Request form elements
+  const requestForm  = document.getElementById('requestForm');
+  const reqName      = document.getElementById('reqName');
+  const reqLang      = document.getElementById('reqLang');
+  const reqQuality   = document.getElementById('reqQuality');
+  const reqContact   = document.getElementById('reqContact');
+  const reqBtn       = document.getElementById('reqBtn');
+  const reqSuccess   = document.getElementById('reqSuccess');
+  const reqLiveCount = document.getElementById('reqLiveCount');
 
   // ---------- Toast Helper ----------
   function showToast(msg, color) {
     toast.textContent = msg;
-    if (color) toast.style.background = color;
-    else toast.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+    toast.style.background = color || 'linear-gradient(135deg, #10b981, #059669)';
     toast.classList.add('show');
     clearTimeout(toast._t);
-    toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+    toast._t = setTimeout(() => toast.classList.remove('show'), 2600);
   }
 
   // ---------- Search ----------
@@ -438,7 +616,83 @@
   });
   backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-  // ---------- Realtime Listener ----------
+  // ============================================================
+  // 🎯 MOVIE REQUEST SUBMIT
+  // ============================================================
+  const RATE_LIMIT_MS = 60 * 1000; // 1 minute me sirf 1 request
+
+  requestForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name    = reqName.value.trim();
+    const lang    = reqLang.value.trim();
+    const quality = reqQuality.value.trim();
+    const contact = reqContact.value.trim();
+
+    if (!name) {
+      showToast('⚠️ Movie ka naam likhna zaroori hai', 'linear-gradient(135deg, #f59e0b, #d97706)');
+      reqName.focus();
+      return;
+    }
+
+    // Rate limit (spam protection)
+    const lastReq = Number(localStorage.getItem('lastMovieRequest') || 0);
+    const now = Date.now();
+    if (now - lastReq < RATE_LIMIT_MS) {
+      const secs = Math.ceil((RATE_LIMIT_MS - (now - lastReq)) / 1000);
+      showToast(`⏳ Thoda intezaar karein (${secs}s)`, 'linear-gradient(135deg, #f59e0b, #d97706)');
+      return;
+    }
+
+    // UI loading state
+    const originalText = reqBtn.textContent;
+    reqBtn.disabled = true;
+    reqBtn.textContent = '⏳ Bheja ja raha hai...';
+    reqSuccess.classList.remove('show');
+
+    try {
+      const newReqRef = push(requestsRef); // unique key generate
+      await set(newReqRef, {
+        name: name,
+        lang: lang || 'Any',
+        quality: quality || 'Any',
+        contact: contact || 'Not provided',
+        status: 'pending',            // admin panel me status change kar sakte ho
+        time: now,
+        timeReadable: new Date(now).toLocaleString('en-IN'),
+        source: 'website'
+      });
+
+      localStorage.setItem('lastMovieRequest', String(now));
+
+      // Success UI
+      reqSuccess.classList.add('show');
+      requestForm.reset();
+      showToast('✅ Request bhej di gayi! 6 ghante me mil jayegi 🎬', 'linear-gradient(135deg, #a78bfa, #6366f1)');
+
+      // Auto-hide success box
+      clearTimeout(reqSuccess._t);
+      reqSuccess._t = setTimeout(() => reqSuccess.classList.remove('show'), 9000);
+
+    } catch (err) {
+      console.error('Request error:', err);
+      showToast('❌ Request nahi bhej paye. Internet check karein.', 'linear-gradient(135deg, #ef4444, #b91c1c)');
+    } finally {
+      reqBtn.disabled = false;
+      reqBtn.textContent = originalText;
+    }
+  });
+
+  // ---------- Live Request Counter ----------
+  onValue(requestsRef, (snap) => {
+    const val = snap.val();
+    const total = val ? Object.keys(val).length : 0;
+    reqLiveCount.textContent = `📊 Ab tak ${total} request${total !== 1 ? 's' : ''} bheji gayi hain`;
+  });
+
+  // ============================================================
+  // 🎬 MOVIES REALTIME LISTENER
+  // ============================================================
   onValue(moviesRef, (snapshot) => {
     const data = snapshot.val();
 
@@ -450,7 +704,7 @@
         <div class="empty">
           <span class="empty-icon">🎞️</span>
           <h3>Abhi koi movie nahi hai</h3>
-          <p>Thodi der baad check karo</p>
+          <p>Upar form se movie request karein — 6 ghante me aa jayegi!</p>
         </div>`;
       return;
     }
@@ -543,7 +797,7 @@
         <div class="empty">
           <span class="empty-icon">🔍</span>
           <h3>Koi movie nahi mili</h3>
-          <p>Filter ya search change karke try karo</p>
+          <p>Filter ya search change karke try karo — ya upar request kar do!</p>
         </div>`;
       return;
     }
