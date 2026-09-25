@@ -326,6 +326,28 @@
     animation: trendPulse 2.4s ease-in-out infinite;
   }
 
+  /* Your Name field (full width) */
+  .req-name-row {
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .req-name-row input {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 2px solid #334155;
+    background: #0f172a;
+    color: #f1f5f9;
+    font-size: 14px;
+    outline: none;
+    transition: 0.2s;
+  }
+  .req-name-row input::placeholder { color: #64748b; }
+  .req-name-row input:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(167,139,250,0.2);
+  }
+
   .req-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
@@ -469,6 +491,11 @@
     </div>
 
     <form id="requestForm" autocomplete="off">
+      <!-- ✅ Your Name -->
+      <div class="req-name-row">
+        <input type="text" id="reqRequesterName" placeholder="👤 Aapka Naam * (e.g. Rahul Sharma)" required maxlength="60">
+      </div>
+
       <div class="req-grid">
         <input type="text" id="reqName" placeholder="🎬 Movie ka naam * (e.g. Pushpa 2)" required maxlength="100">
         <input type="text" id="reqLang" placeholder="🌐 Language (Hindi / Tamil...)" maxlength="40">
@@ -563,25 +590,26 @@
   let favorites = JSON.parse(localStorage.getItem('favMovies') || '[]');
 
   // ---------- Elements ----------
-  const searchInput   = document.getElementById('searchInput');
-  const clearSearch   = document.getElementById('clearSearch');
-  const filterLang    = document.getElementById('filterLang');
-  const filterQuality = document.getElementById('filterQuality');
-  const sortBy        = document.getElementById('sortBy');
-  const listDiv       = document.getElementById('movieList');
-  const countBadge    = document.getElementById('countBadge');
-  const statsBar      = document.getElementById('statsBar');
-  const backTop       = document.getElementById('backTop');
-  const toast         = document.getElementById('toast');
+  const searchInput       = document.getElementById('searchInput');
+  const clearSearch       = document.getElementById('clearSearch');
+  const filterLang        = document.getElementById('filterLang');
+  const filterQuality     = document.getElementById('filterQuality');
+  const sortBy            = document.getElementById('sortBy');
+  const listDiv           = document.getElementById('movieList');
+  const countBadge        = document.getElementById('countBadge');
+  const statsBar          = document.getElementById('statsBar');
+  const backTop           = document.getElementById('backTop');
+  const toast             = document.getElementById('toast');
 
   // Request form elements
-  const requestForm  = document.getElementById('requestForm');
-  const reqName      = document.getElementById('reqName');
-  const reqLang      = document.getElementById('reqLang');
-  const reqQuality   = document.getElementById('reqQuality');
-  const reqBtn       = document.getElementById('reqBtn');
-  const reqSuccess   = document.getElementById('reqSuccess');
-  const reqLiveCount = document.getElementById('reqLiveCount');
+  const requestForm       = document.getElementById('requestForm');
+  const reqRequesterName  = document.getElementById('reqRequesterName');
+  const reqName           = document.getElementById('reqName');
+  const reqLang           = document.getElementById('reqLang');
+  const reqQuality        = document.getElementById('reqQuality');
+  const reqBtn            = document.getElementById('reqBtn');
+  const reqSuccess        = document.getElementById('reqSuccess');
+  const reqLiveCount      = document.getElementById('reqLiveCount');
 
   // ---------- Toast Helper ----------
   function showToast(msg, color) {
@@ -622,10 +650,16 @@
   requestForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const name    = reqName.value.trim();
-    const lang    = reqLang.value.trim();
-    const quality = reqQuality.value.trim();
+    const requesterName = reqRequesterName.value.trim();
+    const name          = reqName.value.trim();
+    const lang          = reqLang.value.trim();
+    const quality       = reqQuality.value.trim();
 
+    if (!requesterName) {
+      showToast('⚠️ Apna naam likhna zaroori hai', 'linear-gradient(135deg, #f59e0b, #d97706)');
+      reqRequesterName.focus();
+      return;
+    }
     if (!name) {
       showToast('⚠️ Movie ka naam likhna zaroori hai', 'linear-gradient(135deg, #f59e0b, #d97706)');
       reqName.focus();
@@ -650,10 +684,11 @@
     try {
       const newReqRef = push(requestsRef); // unique key generate
       await set(newReqRef, {
+        requesterName: requesterName,     // ✅ user ka naam → admin panel me dikhega
         name: name,
         lang: lang || 'Any',
         quality: quality || 'Any',
-        status: 'pending',            // admin panel me status change kar sakte ho
+        status: 'pending',                // admin panel me status change kar sakte ho
         time: now,
         timeReadable: new Date(now).toLocaleString('en-IN'),
         source: 'website'
