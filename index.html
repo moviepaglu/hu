@@ -464,7 +464,7 @@
       <div class="req-icon">🎯</div>
       <div>
         <h2>Movie Request Karein <span class="req-pill">⚡ 6 HOURS</span></h2>
-        <p>Jo movie aapko chahiye, uska naam likhkar submit karein — <strong>6 ghante</strong> ke andar upload kar di jayegi. Request seedha admin panel me jayegi.</p>
+        <p>Jo movie aapko chahiye, uska naam likhkar submit karein — <strong>Admin 6 ghante</strong> ke andar upload kar dega. Bas naam likho aur submit karo!</p>
       </div>
     </div>
 
@@ -473,7 +473,6 @@
         <input type="text" id="reqName" placeholder="🎬 Movie ka naam * (e.g. Pushpa 2)" required maxlength="100">
         <input type="text" id="reqLang" placeholder="🌐 Language (Hindi / Tamil...)" maxlength="40">
         <input type="text" id="reqQuality" placeholder="🎞️ Quality (480p / 720p / 1080p)" maxlength="30">
-        <input type="text" id="reqContact" placeholder="📱 Telegram / WhatsApp (optional)" maxlength="60">
       </div>
       <button type="submit" class="btn-request" id="reqBtn">🚀 Request Submit Karein</button>
       <p class="req-note">
@@ -486,7 +485,7 @@
       <div class="tick">✅</div>
       <div>
         <h4>Request Successfully Bhej Di Gayi!</h4>
-        <p>Aapki movie <strong>6 ghante</strong> ke andar upload kar di jayegi. Thodi der baad page refresh karke check karte rahiye. 🍿</p>
+        <p>Admin aapki movie <strong>6 ghante</strong> ke andar upload kar dega. Thodi der baad page refresh karke check karte rahiye. 🍿</p>
       </div>
     </div>
   </div>
@@ -580,7 +579,6 @@
   const reqName      = document.getElementById('reqName');
   const reqLang      = document.getElementById('reqLang');
   const reqQuality   = document.getElementById('reqQuality');
-  const reqContact   = document.getElementById('reqContact');
   const reqBtn       = document.getElementById('reqBtn');
   const reqSuccess   = document.getElementById('reqSuccess');
   const reqLiveCount = document.getElementById('reqLiveCount');
@@ -627,7 +625,6 @@
     const name    = reqName.value.trim();
     const lang    = reqLang.value.trim();
     const quality = reqQuality.value.trim();
-    const contact = reqContact.value.trim();
 
     if (!name) {
       showToast('⚠️ Movie ka naam likhna zaroori hai', 'linear-gradient(135deg, #f59e0b, #d97706)');
@@ -656,7 +653,6 @@
         name: name,
         lang: lang || 'Any',
         quality: quality || 'Any',
-        contact: contact || 'Not provided',
         status: 'pending',            // admin panel me status change kar sakte ho
         time: now,
         timeReadable: new Date(now).toLocaleString('en-IN'),
@@ -668,7 +664,7 @@
       // Success UI
       reqSuccess.classList.add('show');
       requestForm.reset();
-      showToast('✅ Request bhej di gayi! 6 ghante me mil jayegi 🎬', 'linear-gradient(135deg, #a78bfa, #6366f1)');
+      showToast('✅ Request bhej di gayi! Admin 6 ghante me upload karega 🎬', 'linear-gradient(135deg, #a78bfa, #6366f1)');
 
       // Auto-hide success box
       clearTimeout(reqSuccess._t);
@@ -704,7 +700,7 @@
         <div class="empty">
           <span class="empty-icon">🎞️</span>
           <h3>Abhi koi movie nahi hai</h3>
-          <p>Upar form se movie request karein — 6 ghante me aa jayegi!</p>
+          <p>Upar form se movie request karein — admin 6 ghante me upload kar dega!</p>
         </div>`;
       return;
     }
