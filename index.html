@@ -33,9 +33,10 @@
   }
   .header .sub { color:#94a3b8; font-size:14px; margin-top:10px; position:relative; }
 
+  /* ---------- Search & Filters ---------- */
   .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; }
   .search-bar input {
-    width:100%; padding: 13px 18px 13px 45px;
+    width:100%; padding: 13px 45px 13px 45px;
     border-radius: 12px; border: 2px solid #334155;
     background: #0f172a; color: #fff; font-size: 14px;
     outline: none; transition: 0.2s;
@@ -45,6 +46,29 @@
     content: '🔍'; position: absolute; left: 15px; top: 50%;
     transform: translateY(-50%); font-size: 16px; pointer-events: none;
   }
+  .clear-search {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: #334155; border: none; color: #94a3b8; cursor: pointer;
+    width: 24px; height: 24px; border-radius: 50%; font-size: 12px;
+    display: none; align-items: center; justify-content: center;
+    transition: 0.2s;
+  }
+  .clear-search:hover { background: #475569; color: #fff; }
+  .clear-search.show { display: flex; }
+
+  /* ---------- Filter Bar ---------- */
+  .filter-bar {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    margin-top: 18px; position: relative;
+  }
+  .filter-bar select {
+    padding: 10px 14px; border-radius: 10px;
+    border: 2px solid #334155; background: #0f172a;
+    color: #e2e8f0; font-size: 13px; font-weight: 600;
+    outline: none; cursor: pointer; transition: 0.2s;
+  }
+  .filter-bar select:focus { border-color: #38bdf8; }
+  .filter-bar select:hover { border-color: #475569; }
 
   .card {
     background: rgba(30,41,59,0.8); border-radius:24px;
@@ -77,6 +101,7 @@
     border-radius: 18px; overflow: hidden;
     transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex; flex-direction: column; cursor: pointer;
+    position: relative;
   }
   .movie-item:hover {
     border-color: #38bdf8; transform: translateY(-8px);
@@ -98,7 +123,7 @@
   }
 
   .quality-float {
-    position: absolute; top: 10px; right: 10px;
+    position: absolute; top: 10px; right: 50px;
     background: rgba(6, 95, 70, 0.95);
     color: #6ee7b7; padding: 4px 10px;
     border-radius: 20px; font-size: 10px;
@@ -106,6 +131,35 @@
     backdrop-filter: blur(4px);
     border: 1px solid rgba(110, 231, 183, 0.3);
   }
+
+  /* ---------- Trending Badge ---------- */
+  .trending-float {
+    position: absolute; top: 10px; left: 10px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    color: #fff; padding: 4px 10px;
+    border-radius: 20px; font-size: 10px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+    animation: trendPulse 2s ease-in-out infinite;
+  }
+  @keyframes trendPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+
+  /* ---------- Favorite Button ---------- */
+  .fav-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(15,23,42,0.85);
+    border: 1px solid #334155;
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 15px;
+    transition: 0.2s; z-index: 2;
+    backdrop-filter: blur(4px);
+  }
+  .fav-btn:hover { transform: scale(1.15); background: rgba(30,41,59,0.95); }
+  .fav-btn.active { background: rgba(239,68,68,0.2); border-color: #ef4444; }
 
   .item-body { padding: 14px; flex:1; display: flex; flex-direction: column; }
   .item-name {
@@ -119,6 +173,8 @@
   .badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
   .mini-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 700; }
   .badge-lang { background: #1e40af; color: #bfdbfe; }
+  .badge-year { background: #7c2d12; color: #fed7aa; }
+  .badge-rating { background: #713f12; color: #fde047; }
 
   .item-desc {
     font-size: 12px; color: #94a3b8; line-height: 1.5;
@@ -127,6 +183,7 @@
     -webkit-box-orient: vertical; overflow: hidden;
   }
 
+  /* ---------- Download Button ---------- */
   .btn-download {
     background: linear-gradient(135deg, #10b981, #059669);
     color: #fff; border: none;
@@ -139,6 +196,21 @@
   }
   .btn-download:hover { transform: scale(1.03); box-shadow: 0 10px 25px rgba(16,185,129,0.4); }
   .btn-download:active { transform: scale(0.98); }
+
+  /* ---------- Stats Bar ---------- */
+  .stats-bar {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 20px; justify-content: center;
+  }
+  .stat-chip {
+    background: rgba(15,23,42,0.6);
+    border: 1px solid #334155;
+    padding: 8px 16px; border-radius: 12px;
+    font-size: 12px; font-weight: 600;
+    color: #94a3b8;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .stat-chip strong { color: #38bdf8; }
 
   .empty, .loading {
     text-align: center; padding: 60px 20px;
@@ -160,6 +232,52 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* ---------- Toast ---------- */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff; padding: 14px 24px;
+    border-radius: 12px; font-weight: 600; font-size: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    opacity: 0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ---------- Back to Top ---------- */
+  .back-top {
+    position: fixed; bottom: 25px; right: 25px;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #a78bfa);
+    border: none; color: #fff; font-size: 20px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 10px 25px rgba(56,189,248,0.4);
+    opacity: 0; transform: scale(0); transition: 0.3s;
+    z-index: 999;
+  }
+  .back-top.show { opacity: 1; transform: scale(1); }
+  .back-top:hover { transform: scale(1.1); }
+
+  /* ---------- Skeleton Loading ---------- */
+  .skeleton {
+    background: #0f172a; border: 1px solid #334155;
+    border-radius: 18px; overflow: hidden;
+    animation: shimmer 1.5s infinite;
+  }
+  .skeleton-poster { width: 100%; aspect-ratio: 2/3; background: #1e293b; }
+  .skeleton-body { padding: 14px; }
+  .skeleton-line {
+    height: 12px; background: #1e293b; border-radius: 6px;
+    margin-bottom: 10px;
+  }
+  .skeleton-line.short { width: 60%; }
+  .skeleton-line.btn { height: 38px; margin-top: 15px; }
+  @keyframes shimmer {
+    0%,100% { opacity: 0.6; }
+    50% { opacity: 1; }
+  }
+
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
@@ -172,6 +290,8 @@
     .item-name { font-size: 13px; min-height: 34px; }
     .item-desc { font-size: 11px; -webkit-line-clamp: 2; }
     .btn-download { font-size: 12px; padding: 10px 12px; }
+    .fav-btn { width: 28px; height: 28px; font-size: 13px; }
+    .quality-float { font-size: 9px; padding: 3px 8px; right: 44px; }
   }
 </style>
 </head>
@@ -183,7 +303,23 @@
     <h1>🎬 Movie Download Hub</h1>
     <p class="sub">Free HD movies · No login · Instant download</p>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search movie...">
+      <input type="text" id="searchInput" placeholder="Search movie name, language, quality...">
+      <button class="clear-search" id="clearSearch" title="Clear">✕</button>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <select id="filterLang">
+        <option value="">🌐 All Languages</option>
+      </select>
+      <select id="filterQuality">
+        <option value="">🎞️ All Qualities</option>
+      </select>
+      <select id="sortBy">
+        <option value="newest">🆕 Newest First</option>
+        <option value="oldest">📜 Oldest First</option>
+        <option value="name">🔤 Name (A-Z)</option>
+      </select>
     </div>
   </div>
 
@@ -192,10 +328,34 @@
       <div class="left">📥 Available Movies</div>
       <span class="count-badge" id="countBadge">0 Movies</span>
     </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="statsBar"></div>
+
     <div class="movie-list" id="movieList">
-      <div class="loading">
-        <div class="spinner"></div>
-        <div>Loading movies...</div>
+      <div class="skeleton">
+        <div class="skeleton-poster"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line btn"></div>
+        </div>
+      </div>
+      <div class="skeleton">
+        <div class="skeleton-poster"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line btn"></div>
+        </div>
+      </div>
+      <div class="skeleton">
+        <div class="skeleton-poster"></div>
+        <div class="skeleton-body">
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+          <div class="skeleton-line btn"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -204,12 +364,18 @@
 
 </div>
 
+<!-- Back to Top -->
+<button class="back-top" id="backTop" title="Back to top">↑</button>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Done!</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // 🔥 NAYA Firebase Config (abod-df454)
+  // 🔥 Firebase Config
   const firebaseConfig = {
     apiKey: "AIzaSyC6bvaho6e-55XSPeW92e6CMviuj6WCqA8",
     authDomain: "abod-df454.firebaseapp.com",
@@ -226,20 +392,51 @@
   const moviesRef = ref(db, 'movies');
 
   let allMovies = [];
+  let favorites = JSON.parse(localStorage.getItem('favMovies') || '[]');
+
+  // ---------- Elements ----------
+  const searchInput = document.getElementById('searchInput');
+  const clearSearch = document.getElementById('clearSearch');
+  const filterLang = document.getElementById('filterLang');
+  const filterQuality = document.getElementById('filterQuality');
+  const sortBy = document.getElementById('sortBy');
+  const listDiv = document.getElementById('movieList');
+  const countBadge = document.getElementById('countBadge');
+  const statsBar = document.getElementById('statsBar');
+  const backTop = document.getElementById('backTop');
+  const toast = document.getElementById('toast');
+
+  // ---------- Toast Helper ----------
+  function showToast(msg, color) {
+    toast.textContent = msg;
+    if (color) toast.style.background = color;
+    else toast.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+    toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
 
   // ---------- Search ----------
-  const searchInput = document.getElementById('searchInput');
-  searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    const filtered = query
-      ? allMovies.filter(m =>
-          (m.name || '').toLowerCase().includes(query) ||
-          (m.lang || '').toLowerCase().includes(query) ||
-          (m.quality || '').toLowerCase().includes(query)
-        )
-      : allMovies;
-    renderMovies(filtered);
+  searchInput.addEventListener('input', () => {
+    clearSearch.classList.toggle('show', searchInput.value.length > 0);
+    applyFilters();
   });
+
+  clearSearch.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearch.classList.remove('show');
+    applyFilters();
+  });
+
+  filterLang.addEventListener('change', applyFilters);
+  filterQuality.addEventListener('change', applyFilters);
+  sortBy.addEventListener('change', applyFilters);
+
+  // ---------- Back to Top ----------
+  window.addEventListener('scroll', () => {
+    backTop.classList.toggle('show', window.scrollY > 400);
+  });
+  backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   // ---------- Realtime Listener ----------
   onValue(moviesRef, (snapshot) => {
@@ -247,8 +444,9 @@
 
     if (!data) {
       allMovies = [];
-      document.getElementById('countBadge').textContent = '0 Movies';
-      document.getElementById('movieList').innerHTML = `
+      countBadge.textContent = '0 Movies';
+      statsBar.innerHTML = '';
+      listDiv.innerHTML = `
         <div class="empty">
           <span class="empty-icon">🎞️</span>
           <h3>Abhi koi movie nahi hai</h3>
@@ -261,23 +459,83 @@
       .map(([id, val]) => ({ id, ...val }))
       .sort((a, b) => (b.time || 0) - (a.time || 0));
 
-    const query = searchInput.value.toLowerCase().trim();
-    const filtered = query
-      ? allMovies.filter(m =>
-          (m.name || '').toLowerCase().includes(query) ||
-          (m.lang || '').toLowerCase().includes(query) ||
-          (m.quality || '').toLowerCase().includes(query)
-        )
-      : allMovies;
-
-    renderMovies(filtered);
+    populateFilters();
+    applyFilters();
   });
+
+  // ---------- Populate Filters ----------
+  function populateFilters() {
+    const langs = [...new Set(allMovies.map(m => m.lang).filter(Boolean))];
+    const qualities = [...new Set(allMovies.map(m => m.quality).filter(Boolean))];
+
+    const currentLang = filterLang.value;
+    const currentQuality = filterQuality.value;
+
+    filterLang.innerHTML = '<option value="">🌐 All Languages</option>' +
+      langs.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join('');
+
+    filterQuality.innerHTML = '<option value="">🎞️ All Qualities</option>' +
+      qualities.map(q => `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`).join('');
+
+    if (langs.includes(currentLang)) filterLang.value = currentLang;
+    if (qualities.includes(currentQuality)) filterQuality.value = currentQuality;
+  }
+
+  // ---------- Apply All Filters ----------
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase().trim();
+    const lang = filterLang.value;
+    const quality = filterQuality.value;
+    const sort = sortBy.value;
+
+    let filtered = allMovies.filter(m => {
+      if (query) {
+        const match = (m.name || '').toLowerCase().includes(query) ||
+                      (m.lang || '').toLowerCase().includes(query) ||
+                      (m.quality || '').toLowerCase().includes(query) ||
+                      (m.desc || '').toLowerCase().includes(query);
+        if (!match) return false;
+      }
+      if (lang && m.lang !== lang) return false;
+      if (quality && m.quality !== quality) return false;
+      return true;
+    });
+
+    // Sorting
+    if (sort === 'newest') {
+      filtered.sort((a, b) => (b.time || 0) - (a.time || 0));
+    } else if (sort === 'oldest') {
+      filtered.sort((a, b) => (a.time || 0) - (b.time || 0));
+    } else if (sort === 'name') {
+      filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    }
+
+    // Favorites first
+    filtered.sort((a, b) => {
+      const aFav = favorites.includes(a.id) ? 1 : 0;
+      const bFav = favorites.includes(b.id) ? 1 : 0;
+      return bFav - aFav;
+    });
+
+    updateStats(filtered);
+    renderMovies(filtered);
+  }
+
+  // ---------- Stats Bar ----------
+  function updateStats(movies) {
+    const total = movies.length;
+    const favCount = movies.filter(m => favorites.includes(m.id)).length;
+    const langs = new Set(movies.map(m => m.lang).filter(Boolean)).size;
+
+    statsBar.innerHTML = `
+      <div class="stat-chip">🎬 Total: <strong>${total}</strong></div>
+      <div class="stat-chip">❤️ Favorites: <strong>${favCount}</strong></div>
+      <div class="stat-chip">🌐 Languages: <strong>${langs}</strong></div>
+    `;
+  }
 
   // ---------- Render Movies ----------
   function renderMovies(movies) {
-    const listDiv = document.getElementById('movieList');
-    const countBadge = document.getElementById('countBadge');
-
     countBadge.textContent = movies.length + ' Movie' + (movies.length !== 1 ? 's' : '');
 
     if (movies.length === 0) {
@@ -285,7 +543,7 @@
         <div class="empty">
           <span class="empty-icon">🔍</span>
           <h3>Koi movie nahi mili</h3>
-          <p>Doosra naam try karo</p>
+          <p>Filter ya search change karke try karo</p>
         </div>`;
       return;
     }
@@ -295,22 +553,36 @@
       const div = document.createElement('div');
       div.className = 'movie-item';
 
+      const isFav = favorites.includes(m.id);
+      const isTrending = m.trending === true || m.trending === 'true';
+
       const posterHtml = m.poster
         ? `<div class="poster-wrap">
-             <img src="${m.poster}" alt="${escapeHtml(m.name)}" loading="lazy">
+             <img src="${escapeHtml(m.poster)}" alt="${escapeHtml(m.name)}" loading="lazy"
+                  onerror="this.parentElement.innerHTML='<div class=\\'no-poster\\'>🎬</div><span class=\\'quality-float\\'>🎞️ ${escapeHtml(m.quality || 'HD')}</span>'">
              <span class="quality-float">🎞️ ${escapeHtml(m.quality || 'HD')}</span>
+             ${isTrending ? '<span class="trending-float">🔥 TRENDING</span>' : ''}
            </div>`
         : `<div class="poster-wrap">
              <div class="no-poster">🎬</div>
              <span class="quality-float">🎞️ ${escapeHtml(m.quality || 'HD')}</span>
+             ${isTrending ? '<span class="trending-float">🔥 TRENDING</span>' : ''}
            </div>`;
+
+      const yearBadge = m.year ? `<span class="mini-badge badge-year">📅 ${escapeHtml(m.year)}</span>` : '';
+      const ratingBadge = m.rating ? `<span class="mini-badge badge-rating">⭐ ${escapeHtml(m.rating)}</span>` : '';
 
       div.innerHTML = `
         ${posterHtml}
+        <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${m.id}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">
+          ${isFav ? '❤️' : '🤍'}
+        </button>
         <div class="item-body">
           <div class="item-name">${escapeHtml(m.name)}</div>
           <div class="badges">
             <span class="mini-badge badge-lang">🌐 ${escapeHtml(m.lang || 'N/A')}</span>
+            ${yearBadge}
+            ${ratingBadge}
           </div>
           <div class="item-desc">${escapeHtml(m.desc || 'No description available.')}</div>
           <a class="btn-download" href="${escapeHtml(m.link)}" target="_blank" rel="noopener" download>
@@ -318,10 +590,36 @@
           </a>
         </div>
       `;
+
+      // Favorite toggle
+      div.querySelector('.fav-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFavorite(m.id, e.currentTarget);
+      });
+
       listDiv.appendChild(div);
     });
   }
 
+  // ---------- Toggle Favorite ----------
+  function toggleFavorite(id, btn) {
+    const idx = favorites.indexOf(id);
+    if (idx > -1) {
+      favorites.splice(idx, 1);
+      btn.classList.remove('active');
+      btn.textContent = '🤍';
+      showToast('💔 Removed from favorites', 'linear-gradient(135deg, #ef4444, #b91c1c)');
+    } else {
+      favorites.push(id);
+      btn.classList.add('active');
+      btn.textContent = '❤️';
+      showToast('❤️ Added to favorites!', 'linear-gradient(135deg, #ec4899, #be185d)');
+    }
+    localStorage.setItem('favMovies', JSON.stringify(favorites));
+    setTimeout(applyFilters, 200);
+  }
+
+  // ---------- Escape HTML ----------
   function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text || '';
