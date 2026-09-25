@@ -14,16 +14,18 @@
     background: rgba(30,41,59,0.7); border-radius:24px;
     border:1px solid #334155;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    position: relative; overflow: hidden;
+    position: relative; overflow: visible;
   }
   .header::before {
-    content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%;
-    background: radial-gradient(circle, rgba(56,189,248,0.15) 0%, transparent 60%);
+    content:''; position:absolute; inset:0;
+    border-radius: 24px;
+    background: radial-gradient(circle at 50% 50%, rgba(56,189,248,0.15) 0%, transparent 60%);
     animation: pulse 4s ease-in-out infinite;
+    pointer-events: none;
   }
   @keyframes pulse {
-    0%,100% { transform: scale(1); opacity: 0.5; }
-    50% { transform: scale(1.1); opacity: 0.8; }
+    0%,100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
   }
   .header h1 {
     font-size:34px; position:relative;
@@ -34,7 +36,7 @@
   .header .sub { color:#94a3b8; font-size:14px; margin-top:10px; position:relative; }
 
   /* ---------- Search & Filters ---------- */
-  .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; }
+  .search-bar { max-width: 500px; margin: 20px auto 0; position: relative; z-index: 100; }
   .search-bar input {
     width:100%; padding: 13px 45px 13px 45px;
     border-radius: 12px; border: 2px solid #334155;
@@ -45,21 +47,90 @@
   .search-bar::before {
     content: '🔍'; position: absolute; left: 15px; top: 50%;
     transform: translateY(-50%); font-size: 16px; pointer-events: none;
+    z-index: 2;
   }
   .clear-search {
-    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    position: absolute; right: 12px; top: 22px; transform: translateY(-50%);
     background: #334155; border: none; color: #94a3b8; cursor: pointer;
     width: 24px; height: 24px; border-radius: 50%; font-size: 12px;
     display: none; align-items: center; justify-content: center;
     transition: 0.2s;
+    z-index: 3;
   }
   .clear-search:hover { background: #475569; color: #fff; }
   .clear-search.show { display: flex; }
+
+  /* ---------- Search Suggestions ---------- */
+  .search-suggest {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0; right: 0;
+    background: #0f172a;
+    border: 2px solid #334155;
+    border-radius: 14px;
+    max-height: 360px;
+    overflow-y: auto;
+    z-index: 500;
+    display: none;
+    text-align: left;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+    animation: suggestIn .18s ease;
+  }
+  .search-suggest.show { display: block; }
+  @keyframes suggestIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .suggest-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #1e293b;
+    transition: background 0.15s;
+  }
+  .suggest-item:last-child { border-bottom: none; }
+  .suggest-item:hover,
+  .suggest-item.active { background: #1e293b; }
+
+  .suggest-thumb {
+    width: 42px; height: 58px;
+    border-radius: 8px;
+    background: #1e293b;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #475569;
+    border: 1px solid #334155;
+  }
+  .suggest-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  .suggest-info { flex: 1; min-width: 0; }
+  .suggest-name {
+    font-size: 13.5px; font-weight: 700; color: #f1f5f9;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .suggest-name mark {
+    background: transparent;
+    color: #38bdf8;
+    font-weight: 800;
+  }
+  .suggest-meta {
+    font-size: 11px; color: #94a3b8; margin-top: 3px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .suggest-arrow { font-size: 14px; color: #475569; flex-shrink: 0; }
+
+  .suggest-empty {
+    padding: 16px; text-align: center;
+    font-size: 12.5px; color: #64748b;
+  }
 
   /* ---------- Filter Bar ---------- */
   .filter-bar {
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
     margin-top: 18px; position: relative;
+    z-index: 1;
   }
   .filter-bar select {
     padding: 10px 14px; border-radius: 10px;
@@ -611,6 +682,10 @@
     .req-icon { width: 44px; height: 44px; font-size: 22px; border-radius: 13px; }
     .req-grid { grid-template-columns: 1fr; }
     .btn-request { font-size: 14px; padding: 14px; }
+
+    .suggest-thumb { width: 36px; height: 50px; }
+    .suggest-name { font-size: 12.5px; }
+    .suggest-meta { font-size: 10.5px; }
   }
 </style>
 </head>
@@ -622,8 +697,9 @@
     <h1>🎬 Movie Download Hub</h1>
     <p class="sub">Free HD movies · No login · Instant download</p>
     <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search movie name, language, quality...">
+      <input type="text" id="searchInput" placeholder="Search movie name, language, quality..." autocomplete="off">
       <button class="clear-search" id="clearSearch" title="Clear">✕</button>
+      <div class="search-suggest" id="searchSuggest"></div>
     </div>
 
     <!-- Filter Bar -->
@@ -765,6 +841,7 @@
   // ---------- Elements ----------
   const searchInput       = document.getElementById('searchInput');
   const clearSearch       = document.getElementById('clearSearch');
+  const searchSuggest     = document.getElementById('searchSuggest');
   const filterLang        = document.getElementById('filterLang');
   const filterQuality     = document.getElementById('filterQuality');
   const filterGenre       = document.getElementById('filterGenre');
@@ -808,24 +885,20 @@
   // 📦 NORMALIZE MOVIE DATA (admin format + old format dono support)
   // ============================================================
   function normalizeMovie(m) {
-    // Languages: admin `langs` array, fallback `lang` string
     let langs = [];
     if (Array.isArray(m.langs)) langs = m.langs.filter(Boolean);
     else if (m.langs) langs = String(m.langs).split(/[,\/|]/).map(x => x.trim()).filter(Boolean);
     else if (m.lang) langs = [m.lang];
 
-    // Qualities: admin `qualities` array, fallback `quality` string
     let qualities = [];
     if (Array.isArray(m.qualities)) qualities = m.qualities.filter(Boolean);
     else if (m.qualities) qualities = String(m.qualities).split(/[,\/|]/).map(x => x.trim()).filter(Boolean);
     else if (m.quality) qualities = [m.quality];
 
-    // Genres
     let genres = [];
     if (Array.isArray(m.genres)) genres = m.genres.filter(Boolean);
     else if (m.genres) genres = String(m.genres).split(/[,\/|]/).map(x => x.trim()).filter(Boolean);
 
-    // Servers: admin `servers` array, fallback single link
     let servers = [];
     if (Array.isArray(m.servers) && m.servers.length) {
       servers = m.servers
@@ -849,7 +922,6 @@
       }];
     }
 
-    // Quality display string
     const qualityText = qualities.length
       ? qualities.join(' · ')
       : (servers[0]?.quality || 'HD');
@@ -868,13 +940,16 @@
 
   // ---------- Search ----------
   searchInput.addEventListener('input', () => {
-    clearSearch.classList.toggle('show', searchInput.value.length > 0);
+    const val = searchInput.value;
+    clearSearch.classList.toggle('show', val.length > 0);
+    showSuggestions(val);
     applyFilters();
   });
 
   clearSearch.addEventListener('click', () => {
     searchInput.value = '';
     clearSearch.classList.remove('show');
+    hideSuggestions();
     applyFilters();
   });
 
@@ -888,6 +963,159 @@
     backTop.classList.toggle('show', window.scrollY > 400);
   });
   backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  // ============================================================
+  // 🔍 SEARCH SUGGESTIONS (spelling-wise live match)
+  // ============================================================
+  let suggestIndex = -1;
+  let suggestItems = [];
+
+  function escapeRegex(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function highlightMatch(text, query) {
+    const safeText = escapeHtml(text);
+    if (!query) return safeText;
+    const safeQ = escapeHtml(query).trim();
+    if (!safeQ) return safeText;
+    try {
+      return safeText.replace(
+        new RegExp('(' + escapeRegex(safeQ) + ')', 'ig'),
+        '<mark>$1</mark>'
+      );
+    } catch { return safeText; }
+  }
+
+  function rankMatches(query) {
+    const q = query.toLowerCase().trim();
+    if (!q) return [];
+    const starts = [], includes = [], fuzzy = [];
+    const qWords = q.split(/\s+/).filter(Boolean);
+
+    allMovies.forEach(m => {
+      const name = (m.name || '').toLowerCase();
+      const meta = [...m._langs, ...m._genres, ...m._qualities,
+                    m.year ? String(m.year) : ''].join(' ').toLowerCase();
+
+      if (name.startsWith(q)) starts.push(m);
+      else if (name.includes(q)) includes.push(m);
+      else if (meta.includes(q)) includes.push(m);
+      else if (qWords.length > 1 && qWords.every(w => name.includes(w))) fuzzy.push(m);
+    });
+
+    return [...starts, ...includes, ...fuzzy];
+  }
+
+  function showSuggestions(query) {
+    const q = query.trim();
+    if (!q) { hideSuggestions(); return; }
+
+    const results = rankMatches(q).slice(0, 8);
+    suggestItems = results;
+    suggestIndex = -1;
+
+    if (results.length === 0) {
+      searchSuggest.innerHTML =
+        `<div class="suggest-empty">🎬 "${escapeHtml(q)}" nahi mili — upar 🎯 Request form se bhej dein!</div>`;
+      searchSuggest.classList.add('show');
+      return;
+    }
+
+    searchSuggest.innerHTML = results.map((m, i) => {
+      const thumb = m.poster
+        ? `<img src="${escapeHtml(m.poster)}" alt="" loading="lazy"
+              onerror="this.replaceWith(document.createTextNode('🎬'))">`
+        : '🎬';
+      const metaParts = [
+        m.year,
+        m._langs[0],
+        m._qualities[0] || m._servers[0]?.quality,
+        m._isTrending ? '🔥 Trending' : (m._isFeatured ? '⭐ Featured' : '')
+      ].filter(Boolean);
+      return `
+        <div class="suggest-item" data-index="${i}" data-id="${m.id}">
+          <div class="suggest-thumb">${thumb}</div>
+          <div class="suggest-info">
+            <div class="suggest-name">${highlightMatch(m.name, q)}</div>
+            <div class="suggest-meta">${escapeHtml(metaParts.join(' · '))}</div>
+          </div>
+          <span class="suggest-arrow">↗</span>
+        </div>`;
+    }).join('');
+
+    searchSuggest.classList.add('show');
+
+    searchSuggest.querySelectorAll('.suggest-item').forEach(el => {
+      el.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        const id = el.getAttribute('data-id');
+        const m = allMovies.find(x => x.id === id);
+        if (!m) return;
+        searchInput.value = m.name;
+        clearSearch.classList.add('show');
+        hideSuggestions();
+        applyFilters();
+        openModal(id);
+      });
+    });
+  }
+
+  function hideSuggestions() {
+    searchSuggest.classList.remove('show');
+    suggestItems = [];
+    suggestIndex = -1;
+  }
+
+  function moveSuggest(dir) {
+    const items = searchSuggest.querySelectorAll('.suggest-item');
+    if (!items.length) return;
+    suggestIndex += dir;
+    if (suggestIndex < 0) suggestIndex = items.length - 1;
+    if (suggestIndex >= items.length) suggestIndex = 0;
+    items.forEach((el, i) => el.classList.toggle('active', i === suggestIndex));
+    items[suggestIndex].scrollIntoView({ block: 'nearest' });
+  }
+
+  searchInput.addEventListener('focus', () => {
+    if (searchInput.value.trim()) showSuggestions(searchInput.value);
+  });
+
+  searchInput.addEventListener('blur', () => {
+    setTimeout(hideSuggestions, 180);
+  });
+
+  searchInput.addEventListener('keydown', (e) => {
+    const open = searchSuggest.classList.contains('show');
+    if (!open) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      moveSuggest(1);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      moveSuggest(-1);
+    } else if (e.key === 'Enter') {
+      if (suggestIndex >= 0 && suggestItems[suggestIndex]) {
+        e.preventDefault();
+        const m = suggestItems[suggestIndex];
+        searchInput.value = m.name;
+        clearSearch.classList.add('show');
+        hideSuggestions();
+        applyFilters();
+        openModal(m.id);
+      } else {
+        hideSuggestions();
+      }
+    } else if (e.key === 'Escape') {
+      hideSuggestions();
+      searchInput.blur();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.search-bar')) hideSuggestions();
+  });
 
   // ============================================================
   // 🎬 MODAL OPEN / CLOSE
@@ -927,7 +1155,6 @@
       `<span class="mini-badge badge-genre">🎭 ${escapeHtml(g)}</span>`
     ).join('');
 
-    // Download / Video links
     const dlHtml = servers.length
       ? servers.map(s => `
           <a class="dl-btn" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">
@@ -938,7 +1165,6 @@
           </a>`).join('')
       : `<div class="dl-empty">⚠️ Is movie ke liye abhi koi link available nahi hai.</div>`;
 
-    // Extra links
     const extraLinks = [];
     if (m.trailer)  extraLinks.push(`<a href="${escapeHtml(m.trailer)}" target="_blank" rel="noopener">🎬 Trailer</a>`);
     if (m.subtitle) extraLinks.push(`<a href="${escapeHtml(m.subtitle)}" target="_blank" rel="noopener">💬 Subtitle</a>`);
@@ -1014,7 +1240,7 @@
   });
 
   // ============================================================
-  // 🎯 MOVIE REQUEST SUBMIT (admin ke exact field names)
+  // 🎯 MOVIE REQUEST SUBMIT
   // ============================================================
   const RATE_LIMIT_MS = 60 * 1000;
 
@@ -1052,12 +1278,11 @@
 
     try {
       const newReqRef = push(requestsRef);
-      // ✅ Admin panel exactly ye fields padhta hai
       await set(newReqRef, {
-        requesterName: requesterName,   // 👈 admin panel me user ka naam dikhega
-        name: name,                     // 👈 movie ka naam
-        lang: lang || 'Any',            // 👈 language
-        quality: quality || 'Any',      // 👈 quality
+        requesterName: requesterName,
+        name: name,
+        lang: lang || 'Any',
+        quality: quality || 'Any',
         status: 'pending',
         time: now,
         timeReadable: new Date(now).toLocaleString('en-IN'),
@@ -1115,7 +1340,6 @@
     populateFilters();
     applyFilters();
 
-    // Modal open hai to refresh karo
     if (currentOpenId && allMovies.some(m => m.id === currentOpenId)) {
       openModal(currentOpenId);
     }
@@ -1183,7 +1407,6 @@
       return true;
     });
 
-    // Sorting
     if (sort === 'newest') {
       filtered.sort((a, b) => (b.time || 0) - (a.time || 0));
     } else if (sort === 'oldest') {
@@ -1194,7 +1417,6 @@
       filtered.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
     }
 
-    // Featured + Trending + Favorites priority
     filtered.sort((a, b) => {
       const aScore = (favorites.includes(a.id) ? 4 : 0) + (a._isFeatured ? 2 : 0) + (a._isTrending ? 1 : 0);
       const bScore = (favorites.includes(b.id) ? 4 : 0) + (b._isFeatured ? 2 : 0) + (b._isTrending ? 1 : 0);
@@ -1247,13 +1469,11 @@
       const yearBadge = m.year ? `<span class="mini-badge badge-year">📅 ${escapeHtml(m.year)}</span>` : '';
       const ratingBadge = m.rating ? `<span class="mini-badge badge-rating">⭐ ${escapeHtml(m.rating)}</span>` : '';
 
-      // Top 2 languages shown on card
       const langBadges = m._langs.slice(0, 2)
         .map(l => `<span class="mini-badge badge-lang">🌐 ${escapeHtml(l)}</span>`).join('');
       const langMore = m._langs.length > 2
         ? `<span class="mini-badge badge-lang">+${m._langs.length - 2}</span>` : '';
 
-      // Top quality badge shown
       const topQuality = m._qualities[0] || m._servers[0]?.quality || 'HD';
 
       div.innerHTML = `
@@ -1279,13 +1499,11 @@
         </div>
       `;
 
-      // Card click → open details modal
       div.addEventListener('click', (e) => {
         if (e.target.closest('.fav-btn')) return;
         openModal(m.id);
       });
 
-      // Favorite toggle
       div.querySelector('.fav-btn').addEventListener('click', (e) => {
         e.stopPropagation();
         toggleFavorite(m.id, e.currentTarget);
