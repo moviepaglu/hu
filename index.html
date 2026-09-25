@@ -130,9 +130,11 @@
     font-weight: 800; letter-spacing: 0.5px;
     backdrop-filter: blur(4px);
     border: 1px solid rgba(110, 231, 183, 0.3);
+    max-width: calc(100% - 100px);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
 
-  /* ---------- Trending Badge ---------- */
+  /* ---------- Trending / Featured Badges ---------- */
   .trending-float {
     position: absolute; top: 10px; left: 10px;
     background: linear-gradient(135deg, #f59e0b, #ef4444);
@@ -146,6 +148,15 @@
     0%,100% { transform: scale(1); }
     50% { transform: scale(1.08); }
   }
+  .featured-float {
+    position: absolute; top: 10px; left: 10px;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #422006; padding: 4px 10px;
+    border-radius: 20px; font-size: 10px;
+    font-weight: 800;
+    box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+  }
+  .featured-float + .trending-float { top: 40px; }
 
   /* ---------- Favorite Button ---------- */
   .fav-btn {
@@ -175,6 +186,8 @@
   .badge-lang { background: #1e40af; color: #bfdbfe; }
   .badge-year { background: #7c2d12; color: #fed7aa; }
   .badge-rating { background: #713f12; color: #fde047; }
+  .badge-q { background: #065f46; color: #6ee7b7; }
+  .badge-genre { background: #4c1d95; color: #ddd6fe; }
 
   .item-desc {
     font-size: 12px; color: #94a3b8; line-height: 1.5;
@@ -225,13 +238,6 @@
     padding: 20px 0; border-top: 1px solid #334155;
   }
 
-  .spinner {
-    display: inline-block; width: 30px; height: 30px;
-    border: 3px solid #334155; border-top-color: #38bdf8;
-    border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
   /* ---------- Toast ---------- */
   .toast {
     position: fixed; bottom: 30px; left: 50%;
@@ -241,7 +247,7 @@
     border-radius: 12px; font-weight: 600; font-size: 14px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     opacity: 0; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 9999; pointer-events: none;
+    z-index: 99999; pointer-events: none;
     max-width: 90vw; text-align: center;
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -326,11 +332,7 @@
     animation: trendPulse 2.4s ease-in-out infinite;
   }
 
-  /* Your Name field (full width) */
-  .req-name-row {
-    margin-bottom: 12px;
-    position: relative;
-  }
+  .req-name-row { margin-bottom: 12px; position: relative; }
   .req-name-row input {
     width: 100%;
     padding: 13px 16px;
@@ -400,7 +402,6 @@
   }
   .req-note .live { color: #38bdf8; font-weight: 700; }
 
-  /* Success box */
   .req-success {
     display: none;
     align-items: center; gap: 14px;
@@ -428,10 +429,171 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ============================================================
+     🎬 MOVIE DETAILS MODAL
+     ============================================================ */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(2,6,23,0.88);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    z-index: 10000;
+    opacity: 0; visibility: hidden;
+    transition: 0.28s ease;
+  }
+  .modal-overlay.show { opacity: 1; visibility: visible; }
+
+  .modal {
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 1px solid #334155;
+    border-radius: 24px;
+    max-width: 880px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    position: relative;
+    padding: 28px;
+    transform: translateY(24px) scale(0.96);
+    transition: 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 35px 70px rgba(0,0,0,0.65);
+  }
+  .modal-overlay.show .modal { transform: translateY(0) scale(1); }
+
+  .modal-close {
+    position: absolute; top: 16px; right: 16px;
+    width: 38px; height: 38px; border-radius: 50%;
+    background: rgba(51,65,85,0.9);
+    border: 1px solid #475569;
+    color: #e2e8f0; font-size: 16px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: 0.2s; z-index: 5;
+  }
+  .modal-close:hover { background: #ef4444; border-color: #ef4444; color: #fff; transform: rotate(90deg); }
+
+  .m-grid {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 26px;
+  }
+
+  .m-poster {
+    width: 100%; aspect-ratio: 2/3;
+    border-radius: 18px; overflow: hidden;
+    background: #0f172a; border: 1px solid #334155;
+    position: relative;
+  }
+  .m-poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .m-poster .no-poster { font-size: 70px; }
+
+  .m-title {
+    font-size: 26px; font-weight: 800; color: #f1f5f9;
+    line-height: 1.25; margin-bottom: 12px;
+    padding-right: 40px;
+    background: linear-gradient(135deg, #f1f5f9, #94a3b8);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  .m-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .m-meta .mini-badge { font-size: 11px; padding: 6px 12px; }
+
+  .m-section-label {
+    font-size: 11px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; color: #64748b;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+
+  .m-desc {
+    font-size: 13.5px; color: #cbd5e1; line-height: 1.7;
+    margin-bottom: 20px;
+    white-space: pre-wrap;
+  }
+
+  .dl-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .dl-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(5,150,105,0.15));
+    border: 1.5px solid rgba(16,185,129,0.45);
+    color: #fff; text-decoration: none;
+    transition: 0.22s;
+    position: relative; overflow: hidden;
+  }
+  .dl-btn:hover {
+    background: linear-gradient(135deg, #10b981, #059669);
+    border-color: #10b981;
+    transform: translateX(5px);
+    box-shadow: 0 10px 25px rgba(16,185,129,0.35);
+  }
+  .dl-btn .dl-label {
+    font-size: 12px; font-weight: 700; color: #94a3b8;
+    background: rgba(15,23,42,0.6);
+    padding: 3px 9px; border-radius: 8px;
+    flex-shrink: 0;
+  }
+  .dl-btn:hover .dl-label { background: rgba(0,0,0,0.3); color: #d1fae5; }
+  .dl-btn .dl-q {
+    font-size: 15px; font-weight: 800; color: #6ee7b7;
+    letter-spacing: .3px;
+  }
+  .dl-btn:hover .dl-q { color: #fff; }
+  .dl-btn .dl-spacer { flex: 1; }
+  .dl-btn .dl-icon {
+    font-size: 18px;
+    transition: 0.22s;
+  }
+  .dl-btn:hover .dl-icon { transform: translateY(3px) scale(1.15); }
+
+  .dl-empty {
+    padding: 18px; text-align: center;
+    font-size: 13px; color: #94a3b8;
+    background: rgba(51,65,85,0.35);
+    border: 1px dashed #475569; border-radius: 14px;
+  }
+
+  .m-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .m-action-btn {
+    flex: 1; min-width: 130px;
+    padding: 11px 16px; border-radius: 12px;
+    border: 1.5px solid #334155; background: #0f172a;
+    color: #cbd5e1; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .m-action-btn:hover { border-color: #38bdf8; color: #38bdf8; }
+  .m-action-btn.fav-on { border-color: #ef4444; color: #f87171; background: rgba(239,68,68,0.1); }
+
+  .m-extra-links {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 14px;
+  }
+  .m-extra-links a {
+    flex: 1; min-width: 120px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #0f172a;
+    border: 1.5px solid #334155;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 12.5px; font-weight: 700;
+    text-align: center;
+    transition: 0.2s;
+  }
+  .m-extra-links a:hover { border-color: #38bdf8; color: #38bdf8; }
+
   ::-webkit-scrollbar { width: 8px; }
   ::-webkit-scrollbar-track { background: #0f172a; }
   ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+  @media(max-width: 700px) {
+    .m-grid { grid-template-columns: 1fr; gap: 18px; }
+    .m-poster { max-width: 200px; margin: 0 auto; }
+    .m-title { font-size: 21px; text-align: center; padding-right: 0; }
+    .m-meta { justify-content: center; }
+    .modal { padding: 20px; border-radius: 20px; max-height: 94vh; }
+  }
 
   @media(max-width: 500px) {
     h1 { font-size: 24px !important; }
@@ -441,7 +603,7 @@
     .item-desc { font-size: 11px; -webkit-line-clamp: 2; }
     .btn-download { font-size: 12px; padding: 10px 12px; }
     .fav-btn { width: 28px; height: 28px; font-size: 13px; }
-    .quality-float { font-size: 9px; padding: 3px 8px; right: 44px; }
+    .quality-float { font-size: 9px; padding: 3px 8px; right: 44px; max-width: calc(100% - 86px); }
 
     .request-card { padding: 18px; border-radius: 20px; }
     .req-head h2 { font-size: 16px; }
@@ -472,10 +634,14 @@
       <select id="filterQuality">
         <option value="">🎞️ All Qualities</option>
       </select>
+      <select id="filterGenre">
+        <option value="">🎭 All Genres</option>
+      </select>
       <select id="sortBy">
         <option value="newest">🆕 Newest First</option>
         <option value="oldest">📜 Oldest First</option>
         <option value="name">🔤 Name (A-Z)</option>
+        <option value="rating">⭐ Top Rated</option>
       </select>
     </div>
   </div>
@@ -486,12 +652,11 @@
       <div class="req-icon">🎯</div>
       <div>
         <h2>Movie Request Karein <span class="req-pill">⚡ 6 HOURS</span></h2>
-        <p>Jo movie aapko chahiye, uska naam likhkar submit karein — <strong>Admin 6 ghante</strong> ke andar upload kar dega. Bas naam likho aur submit karo!</p>
+        <p>Jo movie aapko chahiye, uska naam likhkar submit karein — <strong>Admin 6 ghante</strong> ke andar upload kar dega.</p>
       </div>
     </div>
 
     <form id="requestForm" autocomplete="off">
-      <!-- ✅ Your Name -->
       <div class="req-name-row">
         <input type="text" id="reqRequesterName" placeholder="👤 Aapka Naam * (e.g. Rahul Sharma)" required maxlength="60">
       </div>
@@ -499,7 +664,7 @@
       <div class="req-grid">
         <input type="text" id="reqName" placeholder="🎬 Movie ka naam * (e.g. Pushpa 2)" required maxlength="100">
         <input type="text" id="reqLang" placeholder="🌐 Language (Hindi / Tamil...)" maxlength="40">
-        <input type="text" id="reqQuality" placeholder="🎞️ Quality (480p / 720p / 1080p)" maxlength="30">
+        <input type="text" id="reqQuality" placeholder="🎞️ Quality (480p / 720p / 4K)" maxlength="30">
       </div>
       <button type="submit" class="btn-request" id="reqBtn">🚀 Request Submit Karein</button>
       <p class="req-note">
@@ -523,7 +688,6 @@
       <span class="count-badge" id="countBadge">0 Movies</span>
     </div>
 
-    <!-- Stats Bar -->
     <div class="stats-bar" id="statsBar"></div>
 
     <div class="movie-list" id="movieList">
@@ -558,6 +722,14 @@
 
 </div>
 
+<!-- ================= 🎬 MOVIE DETAILS MODAL ================= -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalBox">
+    <button class="modal-close" id="modalClose" title="Close">✕</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
 <!-- Back to Top -->
 <button class="back-top" id="backTop" title="Back to top">↑</button>
 
@@ -569,7 +741,7 @@
   import { getDatabase, ref, onValue, push, set }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // 🔥 Firebase Config
+  // 🔥 Firebase Config (same as admin)
   const firebaseConfig = {
     apiKey: "AIzaSyC6bvaho6e-55XSPeW92e6CMviuj6WCqA8",
     authDomain: "abod-df454.firebaseapp.com",
@@ -584,16 +756,18 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const moviesRef = ref(db, 'movies');
-  const requestsRef = ref(db, 'requests');   // 🎯 requests node (admin panel)
+  const requestsRef = ref(db, 'requests');
 
   let allMovies = [];
   let favorites = JSON.parse(localStorage.getItem('favMovies') || '[]');
+  let currentOpenId = null;
 
   // ---------- Elements ----------
   const searchInput       = document.getElementById('searchInput');
   const clearSearch       = document.getElementById('clearSearch');
   const filterLang        = document.getElementById('filterLang');
   const filterQuality     = document.getElementById('filterQuality');
+  const filterGenre       = document.getElementById('filterGenre');
   const sortBy            = document.getElementById('sortBy');
   const listDiv           = document.getElementById('movieList');
   const countBadge        = document.getElementById('countBadge');
@@ -601,7 +775,6 @@
   const backTop           = document.getElementById('backTop');
   const toast             = document.getElementById('toast');
 
-  // Request form elements
   const requestForm       = document.getElementById('requestForm');
   const reqRequesterName  = document.getElementById('reqRequesterName');
   const reqName           = document.getElementById('reqName');
@@ -611,13 +784,86 @@
   const reqSuccess        = document.getElementById('reqSuccess');
   const reqLiveCount      = document.getElementById('reqLiveCount');
 
-  // ---------- Toast Helper ----------
+  const modalOverlay      = document.getElementById('modalOverlay');
+  const modalContent      = document.getElementById('modalContent');
+  const modalClose        = document.getElementById('modalClose');
+
+  // ---------- Toast ----------
   function showToast(msg, color) {
     toast.textContent = msg;
     toast.style.background = color || 'linear-gradient(135deg, #10b981, #059669)';
     toast.classList.add('show');
     clearTimeout(toast._t);
     toast._t = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+
+  // ---------- Escape HTML ----------
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text == null ? '' : String(text);
+    return div.innerHTML;
+  }
+
+  // ============================================================
+  // 📦 NORMALIZE MOVIE DATA (admin format + old format dono support)
+  // ============================================================
+  function normalizeMovie(m) {
+    // Languages: admin `langs` array, fallback `lang` string
+    let langs = [];
+    if (Array.isArray(m.langs)) langs = m.langs.filter(Boolean);
+    else if (m.langs) langs = String(m.langs).split(/[,\/|]/).map(x => x.trim()).filter(Boolean);
+    else if (m.lang) langs = [m.lang];
+
+    // Qualities: admin `qualities` array, fallback `quality` string
+    let qualities = [];
+    if (Array.isArray(m.qualities)) qualities = m.qualities.filter(Boolean);
+    else if (m.qualities) qualities = String(m.qualities).split(/[,\/|]/).map(x => x.trim()).filter(Boolean);
+    else if (m.quality) qualities = [m.quality];
+
+    // Genres
+    let genres = [];
+    if (Array.isArray(m.genres)) genres = m.genres.filter(Boolean);
+    else if (m.genres) genres = String(m.genres).split(/[,\/|]/).map(x => x.trim()).filter(Boolean);
+
+    // Servers: admin `servers` array, fallback single link
+    let servers = [];
+    if (Array.isArray(m.servers) && m.servers.length) {
+      servers = m.servers
+        .filter(s => s && s.url)
+        .map(s => ({
+          label: s.label || 'Server',
+          quality: s.quality || '',
+          url: s.url
+        }));
+    } else if (m.link) {
+      servers = [{
+        label: 'Server 1',
+        quality: qualities[0] || m.quality || '',
+        url: m.link
+      }];
+    } else if (m.download) {
+      servers = [{
+        label: 'Download',
+        quality: qualities[0] || m.quality || '',
+        url: m.download
+      }];
+    }
+
+    // Quality display string
+    const qualityText = qualities.length
+      ? qualities.join(' · ')
+      : (servers[0]?.quality || 'HD');
+
+    return {
+      ...m,
+      _langs: langs,
+      _qualities: qualities,
+      _genres: genres,
+      _servers: servers,
+      _qualityText: qualityText,
+      _isFeatured: m.featured === true || m.featured === 'true',
+      _isTrending: m.trending === true || m.trending === 'true'
+    };
   }
 
   // ---------- Search ----------
@@ -634,6 +880,7 @@
 
   filterLang.addEventListener('change', applyFilters);
   filterQuality.addEventListener('change', applyFilters);
+  filterGenre.addEventListener('change', applyFilters);
   sortBy.addEventListener('change', applyFilters);
 
   // ---------- Back to Top ----------
@@ -643,9 +890,133 @@
   backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   // ============================================================
-  // 🎯 MOVIE REQUEST SUBMIT
+  // 🎬 MODAL OPEN / CLOSE
   // ============================================================
-  const RATE_LIMIT_MS = 60 * 1000; // 1 minute me sirf 1 request
+  function openModal(id) {
+    const m = allMovies.find(x => x.id === id);
+    if (!m) return;
+    currentOpenId = id;
+
+    const qualities = m._qualities;
+    const langs = m._langs;
+    const genres = m._genres;
+    const servers = m._servers;
+
+    const isFav = favorites.includes(id);
+
+    const posterHtml = m.poster
+      ? `<img src="${escapeHtml(m.poster)}" alt="${escapeHtml(m.name)}"
+             onerror="this.parentElement.innerHTML='<div class=\\'no-poster\\'>🎬</div>'">`
+      : `<div class="no-poster">🎬</div>`;
+
+    const yearBadge   = m.year     ? `<span class="mini-badge badge-year">📅 ${escapeHtml(m.year)}</span>` : '';
+    const ratingBadge = m.rating   ? `<span class="mini-badge badge-rating">⭐ ${escapeHtml(m.rating)}</span>` : '';
+    const durBadge    = m.duration ? `<span class="mini-badge badge-q">⏱️ ${escapeHtml(m.duration)}</span>` : '';
+    const featuredBadge = m._isFeatured ? `<span class="mini-badge badge-rating">⭐ FEATURED</span>` : '';
+    const trendingBadge = m._isTrending ? `<span class="mini-badge" style="background:#be123c;color:#fff;">🔥 TRENDING</span>` : '';
+
+    const langChips = langs.map(l =>
+      `<span class="mini-badge badge-lang">🌐 ${escapeHtml(l)}</span>`
+    ).join('');
+
+    const qualityChips = qualities.map(q =>
+      `<span class="mini-badge badge-q">🎞️ ${escapeHtml(q)}</span>`
+    ).join('');
+
+    const genreChips = genres.map(g =>
+      `<span class="mini-badge badge-genre">🎭 ${escapeHtml(g)}</span>`
+    ).join('');
+
+    // Download / Video links
+    const dlHtml = servers.length
+      ? servers.map(s => `
+          <a class="dl-btn" href="${escapeHtml(s.url)}" target="_blank" rel="noopener">
+            <span class="dl-label">${escapeHtml(s.label)}</span>
+            <span class="dl-q">${escapeHtml(s.quality || 'HD')}</span>
+            <span class="dl-spacer"></span>
+            <span class="dl-icon">⬇️</span>
+          </a>`).join('')
+      : `<div class="dl-empty">⚠️ Is movie ke liye abhi koi link available nahi hai.</div>`;
+
+    // Extra links
+    const extraLinks = [];
+    if (m.trailer)  extraLinks.push(`<a href="${escapeHtml(m.trailer)}" target="_blank" rel="noopener">🎬 Trailer</a>`);
+    if (m.subtitle) extraLinks.push(`<a href="${escapeHtml(m.subtitle)}" target="_blank" rel="noopener">💬 Subtitle</a>`);
+    if (m.download && !servers.some(s => s.url === m.download))
+      extraLinks.push(`<a href="${escapeHtml(m.download)}" target="_blank" rel="noopener">📥 Download</a>`);
+
+    modalContent.innerHTML = `
+      <div class="m-grid">
+        <div>
+          <div class="m-poster">${posterHtml}</div>
+        </div>
+
+        <div>
+          <h2 class="m-title">${escapeHtml(m.name)}</h2>
+
+          <div class="m-meta">
+            ${featuredBadge}
+            ${trendingBadge}
+            ${langChips}
+            ${yearBadge}
+            ${ratingBadge}
+            ${durBadge}
+            ${qualityChips}
+            ${genreChips}
+          </div>
+
+          <div class="m-section-label">📖 Story / Description</div>
+          <p class="m-desc">${escapeHtml(m.desc || 'Is movie ke liye abhi description available nahi hai.')}</p>
+
+          <div class="m-section-label">⬇️ Download Links (${servers.length})</div>
+          <div class="dl-list">${dlHtml}</div>
+
+          ${extraLinks.length ? `
+            <div class="m-section-label" style="margin-top:16px;">🔗 Extra Links</div>
+            <div class="m-extra-links">${extraLinks.join('')}</div>
+          ` : ''}
+
+          <div class="m-actions">
+            <button class="m-action-btn ${isFav ? 'fav-on' : ''}" id="modalFavBtn">
+              ${isFav ? '❤️ Favorites me hai' : '🤍 Add to Favorites'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const modalFavBtn = document.getElementById('modalFavBtn');
+    if (modalFavBtn) {
+      modalFavBtn.addEventListener('click', () => {
+        toggleFavorite(id, null);
+        const nowFav = favorites.includes(id);
+        modalFavBtn.classList.toggle('fav-on', nowFav);
+        modalFavBtn.textContent = nowFav ? '❤️ Favorites me hai' : '🤍 Add to Favorites';
+      });
+    }
+
+    modalOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+    currentOpenId = null;
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modalOverlay.classList.contains('show')) closeModal();
+  });
+
+  // ============================================================
+  // 🎯 MOVIE REQUEST SUBMIT (admin ke exact field names)
+  // ============================================================
+  const RATE_LIMIT_MS = 60 * 1000;
 
   requestForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -666,7 +1037,6 @@
       return;
     }
 
-    // Rate limit (spam protection)
     const lastReq = Number(localStorage.getItem('lastMovieRequest') || 0);
     const now = Date.now();
     if (now - lastReq < RATE_LIMIT_MS) {
@@ -675,20 +1045,20 @@
       return;
     }
 
-    // UI loading state
     const originalText = reqBtn.textContent;
     reqBtn.disabled = true;
     reqBtn.textContent = '⏳ Bheja ja raha hai...';
     reqSuccess.classList.remove('show');
 
     try {
-      const newReqRef = push(requestsRef); // unique key generate
+      const newReqRef = push(requestsRef);
+      // ✅ Admin panel exactly ye fields padhta hai
       await set(newReqRef, {
-        requesterName: requesterName,     // ✅ user ka naam → admin panel me dikhega
-        name: name,
-        lang: lang || 'Any',
-        quality: quality || 'Any',
-        status: 'pending',                // admin panel me status change kar sakte ho
+        requesterName: requesterName,   // 👈 admin panel me user ka naam dikhega
+        name: name,                     // 👈 movie ka naam
+        lang: lang || 'Any',            // 👈 language
+        quality: quality || 'Any',      // 👈 quality
+        status: 'pending',
         time: now,
         timeReadable: new Date(now).toLocaleString('en-IN'),
         source: 'website'
@@ -696,12 +1066,10 @@
 
       localStorage.setItem('lastMovieRequest', String(now));
 
-      // Success UI
       reqSuccess.classList.add('show');
       requestForm.reset();
       showToast('✅ Request bhej di gayi! Admin 6 ghante me upload karega 🎬', 'linear-gradient(135deg, #a78bfa, #6366f1)');
 
-      // Auto-hide success box
       clearTimeout(reqSuccess._t);
       reqSuccess._t = setTimeout(() => reqSuccess.classList.remove('show'), 9000);
 
@@ -741,20 +1109,38 @@
     }
 
     allMovies = Object.entries(data)
-      .map(([id, val]) => ({ id, ...val }))
+      .map(([id, val]) => normalizeMovie({ id, ...val }))
       .sort((a, b) => (b.time || 0) - (a.time || 0));
 
     populateFilters();
     applyFilters();
+
+    // Modal open hai to refresh karo
+    if (currentOpenId && allMovies.some(m => m.id === currentOpenId)) {
+      openModal(currentOpenId);
+    }
   });
 
   // ---------- Populate Filters ----------
   function populateFilters() {
-    const langs = [...new Set(allMovies.map(m => m.lang).filter(Boolean))];
-    const qualities = [...new Set(allMovies.map(m => m.quality).filter(Boolean))];
+    const langSet = new Set();
+    const qualSet = new Set();
+    const genreSet = new Set();
+
+    allMovies.forEach(m => {
+      m._langs.forEach(l => langSet.add(l));
+      m._qualities.forEach(q => qualSet.add(q));
+      m._servers.forEach(s => { if (s.quality) qualSet.add(s.quality); });
+      m._genres.forEach(g => genreSet.add(g));
+    });
+
+    const langs = [...langSet].sort();
+    const qualities = [...qualSet].sort();
+    const genres = [...genreSet].sort();
 
     const currentLang = filterLang.value;
     const currentQuality = filterQuality.value;
+    const currentGenre = filterGenre.value;
 
     filterLang.innerHTML = '<option value="">🌐 All Languages</option>' +
       langs.map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join('');
@@ -762,8 +1148,12 @@
     filterQuality.innerHTML = '<option value="">🎞️ All Qualities</option>' +
       qualities.map(q => `<option value="${escapeHtml(q)}">${escapeHtml(q)}</option>`).join('');
 
+    filterGenre.innerHTML = '<option value="">🎭 All Genres</option>' +
+      genres.map(g => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('');
+
     if (langs.includes(currentLang)) filterLang.value = currentLang;
     if (qualities.includes(currentQuality)) filterQuality.value = currentQuality;
+    if (genres.includes(currentGenre)) filterGenre.value = currentGenre;
   }
 
   // ---------- Apply All Filters ----------
@@ -771,18 +1161,25 @@
     const query = searchInput.value.toLowerCase().trim();
     const lang = filterLang.value;
     const quality = filterQuality.value;
+    const genre = filterGenre.value;
     const sort = sortBy.value;
 
     let filtered = allMovies.filter(m => {
       if (query) {
-        const match = (m.name || '').toLowerCase().includes(query) ||
-                      (m.lang || '').toLowerCase().includes(query) ||
-                      (m.quality || '').toLowerCase().includes(query) ||
-                      (m.desc || '').toLowerCase().includes(query);
-        if (!match) return false;
+        const haystack = [
+          m.name, m.desc, m.year, m.duration,
+          ...m._langs, ...m._qualities, ...m._genres,
+          ...m._servers.map(s => s.quality + ' ' + s.label)
+        ].join(' ').toLowerCase();
+        if (!haystack.includes(query)) return false;
       }
-      if (lang && m.lang !== lang) return false;
-      if (quality && m.quality !== quality) return false;
+      if (lang && !m._langs.includes(lang)) return false;
+      if (quality) {
+        const hasQ = m._qualities.includes(quality) ||
+                     m._servers.some(s => s.quality === quality);
+        if (!hasQ) return false;
+      }
+      if (genre && !m._genres.includes(genre)) return false;
       return true;
     });
 
@@ -793,13 +1190,15 @@
       filtered.sort((a, b) => (a.time || 0) - (b.time || 0));
     } else if (sort === 'name') {
       filtered.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    } else if (sort === 'rating') {
+      filtered.sort((a, b) => (parseFloat(b.rating) || 0) - (parseFloat(a.rating) || 0));
     }
 
-    // Favorites first
+    // Featured + Trending + Favorites priority
     filtered.sort((a, b) => {
-      const aFav = favorites.includes(a.id) ? 1 : 0;
-      const bFav = favorites.includes(b.id) ? 1 : 0;
-      return bFav - aFav;
+      const aScore = (favorites.includes(a.id) ? 4 : 0) + (a._isFeatured ? 2 : 0) + (a._isTrending ? 1 : 0);
+      const bScore = (favorites.includes(b.id) ? 4 : 0) + (b._isFeatured ? 2 : 0) + (b._isTrending ? 1 : 0);
+      return bScore - aScore;
     });
 
     updateStats(filtered);
@@ -810,7 +1209,7 @@
   function updateStats(movies) {
     const total = movies.length;
     const favCount = movies.filter(m => favorites.includes(m.id)).length;
-    const langs = new Set(movies.map(m => m.lang).filter(Boolean)).size;
+    const langs = new Set(movies.flatMap(m => m._langs)).size;
 
     statsBar.innerHTML = `
       <div class="stat-chip">🎬 Total: <strong>${total}</strong></div>
@@ -839,42 +1238,52 @@
       div.className = 'movie-item';
 
       const isFav = favorites.includes(m.id);
-      const isTrending = m.trending === true || m.trending === 'true';
 
       const posterHtml = m.poster
-        ? `<div class="poster-wrap">
-             <img src="${escapeHtml(m.poster)}" alt="${escapeHtml(m.name)}" loading="lazy"
-                  onerror="this.parentElement.innerHTML='<div class=\\'no-poster\\'>🎬</div><span class=\\'quality-float\\'>🎞️ ${escapeHtml(m.quality || 'HD')}</span>'">
-             <span class="quality-float">🎞️ ${escapeHtml(m.quality || 'HD')}</span>
-             ${isTrending ? '<span class="trending-float">🔥 TRENDING</span>' : ''}
-           </div>`
-        : `<div class="poster-wrap">
-             <div class="no-poster">🎬</div>
-             <span class="quality-float">🎞️ ${escapeHtml(m.quality || 'HD')}</span>
-             ${isTrending ? '<span class="trending-float">🔥 TRENDING</span>' : ''}
-           </div>`;
+        ? `<img src="${escapeHtml(m.poster)}" alt="${escapeHtml(m.name)}" loading="lazy"
+                onerror="this.parentElement.innerHTML='<div class=\\'no-poster\\'>🎬</div><span class=\\'quality-float\\'>🎞️ ${escapeHtml(m._qualityText)}</span>'">`
+        : `<div class="no-poster">🎬</div>`;
 
       const yearBadge = m.year ? `<span class="mini-badge badge-year">📅 ${escapeHtml(m.year)}</span>` : '';
       const ratingBadge = m.rating ? `<span class="mini-badge badge-rating">⭐ ${escapeHtml(m.rating)}</span>` : '';
 
+      // Top 2 languages shown on card
+      const langBadges = m._langs.slice(0, 2)
+        .map(l => `<span class="mini-badge badge-lang">🌐 ${escapeHtml(l)}</span>`).join('');
+      const langMore = m._langs.length > 2
+        ? `<span class="mini-badge badge-lang">+${m._langs.length - 2}</span>` : '';
+
+      // Top quality badge shown
+      const topQuality = m._qualities[0] || m._servers[0]?.quality || 'HD';
+
       div.innerHTML = `
-        ${posterHtml}
+        <div class="poster-wrap">
+          ${posterHtml}
+          <span class="quality-float">🎞️ ${escapeHtml(m._qualityText)}</span>
+          ${m._isFeatured ? '<span class="featured-float">⭐ FEATURED</span>' : ''}
+          ${m._isTrending ? '<span class="trending-float">🔥 TRENDING</span>' : ''}
+        </div>
         <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${m.id}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">
           ${isFav ? '❤️' : '🤍'}
         </button>
         <div class="item-body">
           <div class="item-name">${escapeHtml(m.name)}</div>
           <div class="badges">
-            <span class="mini-badge badge-lang">🌐 ${escapeHtml(m.lang || 'N/A')}</span>
+            ${langBadges}
+            ${langMore}
             ${yearBadge}
             ${ratingBadge}
           </div>
           <div class="item-desc">${escapeHtml(m.desc || 'No description available.')}</div>
-          <a class="btn-download" href="${escapeHtml(m.link)}" target="_blank" rel="noopener" download>
-            ⬇️ DOWNLOAD
-          </a>
+          <button class="btn-download" data-open="${m.id}">⬇️ Download (${escapeHtml(topQuality)})</button>
         </div>
       `;
+
+      // Card click → open details modal
+      div.addEventListener('click', (e) => {
+        if (e.target.closest('.fav-btn')) return;
+        openModal(m.id);
+      });
 
       // Favorite toggle
       div.querySelector('.fav-btn').addEventListener('click', (e) => {
@@ -891,24 +1300,15 @@
     const idx = favorites.indexOf(id);
     if (idx > -1) {
       favorites.splice(idx, 1);
-      btn.classList.remove('active');
-      btn.textContent = '🤍';
+      if (btn) { btn.classList.remove('active'); btn.textContent = '🤍'; }
       showToast('💔 Removed from favorites', 'linear-gradient(135deg, #ef4444, #b91c1c)');
     } else {
       favorites.push(id);
-      btn.classList.add('active');
-      btn.textContent = '❤️';
+      if (btn) { btn.classList.add('active'); btn.textContent = '❤️'; }
       showToast('❤️ Added to favorites!', 'linear-gradient(135deg, #ec4899, #be185d)');
     }
     localStorage.setItem('favMovies', JSON.stringify(favorites));
     setTimeout(applyFilters, 200);
-  }
-
-  // ---------- Escape HTML ----------
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text || '';
-    return div.innerHTML;
   }
 </script>
 
